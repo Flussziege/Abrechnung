@@ -1,0 +1,18 @@
+Hosted MVP verification
+=======================
+Date: 2026-09-07
+
+PASS  python -m py_compile transpose_scores.py worker_api.py streamlit_app.py
+PASS  node --check extension/main.js
+PASS  python -m json.tool extension/manifest.json
+PASS  python transpose_scores.py --self-test
+PASS  worker_api import / FastAPI app creation
+PASS  all 9 treble/bass target combinations map to extension actions
+
+Not executable in this build environment:
+- Streamlit runtime smoke test (streamlit package is not installed here)
+- MuseScore 4.7.x end-to-end processing (MuseScore binary is not available here)
+- Docker worker build (official MuseScore AppImage must be supplied in vendor/)
+
+The deployment dependencies are pinned in requirements.txt and
+requirements-worker.txt. The worker refuses non-4.7.x MuseScore by default.

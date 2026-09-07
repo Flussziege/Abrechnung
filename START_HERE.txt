@@ -1,0 +1,33 @@
+MUSESCORE ENSEMBLE TRANSPOSER – SCHNELLSTART
+===========================================
+
+1) Voraussetzung:
+   - Windows 10/11
+   - Python 3
+   - MuseScore Studio 4.7.x
+
+2) Einmalig Abhängigkeiten installieren:
+
+   install_requirements.bat
+
+   oder:
+
+   py -3 -m pip install -r requirements.txt
+
+3) ZUERST DRY-RUN:
+
+   py -3 transpose_scores.py "C:\Noten\Ensemble" --target Bb --export all --dry-run
+
+4) Wenn der Dry-Run korrekt aussieht, echter Export:
+
+   py -3 transpose_scores.py "C:\Noten\Ensemble" --target Bb --export all
+
+Interaktiver Start ohne Kommandozeilenargumente:
+
+   run_interactive.bat
+
+Die Master-.mscz-Dateien werden nicht bearbeitet. MuseScore arbeitet nur auf
+temporären Kopien; zusätzlich wird der SHA-256-Hash der Masterdateien vor und
+nach jedem Stück geprüft.
+
+Vollständige Dokumentation: README.md

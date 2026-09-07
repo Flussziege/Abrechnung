@@ -1,0 +1,28 @@
+# Worker image. Before building, place the official MuseScore Studio 4.7.x
+# x86_64 AppImage at vendor/MuseScore.AppImage.
+FROM python:3.12-bookworm
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates libgl1 libegl1 libxkbcommon0 libxkbcommon-x11-0 \
+    libdbus-1-3 libnss3 libasound2 libfontconfig1 libfreetype6 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY requirements-worker.txt ./
+RUN pip install --no-cache-dir -r requirements-worker.txt
+
+COPY vendor/MuseScore.AppImage /opt/MuseScore.AppImage
+RUN chmod +x /opt/MuseScore.AppImage \
+    && cd /opt \
+    && /opt/MuseScore.AppImage --appimage-extract \
+    && mv /opt/squashfs-root /opt/musescore
+
+COPY transpose_scores.py worker_api.py ./
+COPY extension ./extension
+
+ENV MUSESCORE_EXE=/opt/musescore/AppRun \
+    QT_QPA_PLATFORM=offscreen \
+    MUSESCORE_EXTENSION_DIR=/root/.local/share/MuseScore/MuseScore4/extensions/ensemble_transposer
+
+EXPOSE 8000
+CMD ["uvicorn", "worker_api:app", "--host", "0.0.0.0", "--port", "8000"]

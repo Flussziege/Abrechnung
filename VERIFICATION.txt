@@ -1,0 +1,35 @@
+MUSESCORE ENSEMBLE TRANSPOSER – VERIFIKATION
+============================================
+
+Projektstand: 2026-09-07
+Ziel: MuseScore Studio 4.7.x, Windows 10/11
+
+In dieser Build-Umgebung erfolgreich ausgeführt:
+
+- Python-Syntaxprüfung mit `python -m py_compile transpose_scores.py`
+- interner Test mit `python transpose_scores.py --self-test`
+- JSON-Prüfung von `extension/manifest.json`
+- JavaScript-Syntaxprüfung mit `node --check extension/main.js`
+- synthetischer PDF-Test mit pypdf: 1-seitige PDF erzeugt und durch die
+  projektinterne `validate_pdf()`-Funktion geprüft
+- Prüfung, dass kein veralteter `alias-parts`-Pfad mehr im Projekt vorhanden ist
+
+Der Self-Test prüft insbesondere:
+
+- Windows-Dateinamensbereinigung
+- Behandlung reservierter Windows-Namen
+- eindeutige Dateinamen bei doppelten Auszugstiteln
+- Auslesen des Extension-Reports aus einer synthetischen MSCZ
+- Filterung gespeicherter Excerpts gegenüber zusätzlich gelieferten potentiellen Parts
+
+Nicht in dieser Umgebung ausführbar:
+
+- echter End-to-End-Aufruf von MuseScore Studio 4.7 unter Windows
+- Rendering realer Nutzer-.mscz-Dateien mit der lokalen MuseScore-Installation
+
+Deshalb ist für den Zielrechner als erster praktischer Test ausdrücklich der
+Dry-Run vorgesehen:
+
+  py -3 transpose_scores.py "C:\Noten\Ensemble" --target Bb --export all --dry-run
+
+Danach repräsentative PDFs stichprobenartig visuell prüfen.

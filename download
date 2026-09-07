@@ -1,0 +1,82 @@
+{
+  "uri": "musescore://extensions/ensemble-transposer",
+  "type": "macros",
+  "title": "Ensemble Transposer Batch Helper",
+  "description": "Analyzes scores and selectively transposes stable treble- and bass-clef staves for hosted batch export.",
+  "version": "1.1.0",
+  "vendor": "OpenAI",
+  "ui_context": "ProjectOpened",
+  "apiversion": 1,
+  "actions": [
+    {
+      "code": "analyze",
+      "title": "Analyze for batch transposition",
+      "path": "main.js",
+      "func": "analyze",
+      "show_on_appmenu": false
+    },
+    {
+      "code": "c",
+      "title": "G:C / F:C",
+      "path": "main.js",
+      "func": "targetC",
+      "show_on_appmenu": false
+    },
+    {
+      "code": "bb",
+      "title": "G:Bb / F:C",
+      "path": "main.js",
+      "func": "targetBb",
+      "show_on_appmenu": false
+    },
+    {
+      "code": "eb",
+      "title": "G:Eb / F:C",
+      "path": "main.js",
+      "func": "targetEb",
+      "show_on_appmenu": false
+    },
+    {
+      "code": "c_bb",
+      "title": "G:C / F:Bb",
+      "path": "main.js",
+      "func": "targetC_Bb",
+      "show_on_appmenu": false
+    },
+    {
+      "code": "c_eb",
+      "title": "G:C / F:Eb",
+      "path": "main.js",
+      "func": "targetC_Eb",
+      "show_on_appmenu": false
+    },
+    {
+      "code": "bb_bb",
+      "title": "G:Bb / F:Bb",
+      "path": "main.js",
+      "func": "targetBb_Bb",
+      "show_on_appmenu": false
+    },
+    {
+      "code": "bb_eb",
+      "title": "G:Bb / F:Eb",
+      "path": "main.js",
+      "func": "targetBb_Eb",
+      "show_on_appmenu": false
+    },
+    {
+      "code": "eb_bb",
+      "title": "G:Eb / F:Bb",
+      "path": "main.js",
+      "func": "targetEb_Bb",
+      "show_on_appmenu": false
+    },
+    {
+      "code": "eb_eb",
+      "title": "G:Eb / F:Eb",
+      "path": "main.js",
+      "func": "targetEb_Eb",
+      "show_on_appmenu": false
+    }
+  ]
+}
