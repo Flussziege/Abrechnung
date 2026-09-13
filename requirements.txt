@@ -1,4 +1,56 @@
-streamlit==1.60.0
-pandas>=2.2,<3
-requests>=2.32,<3
-pypdf>=5.0,<7
+# Urlaub Abrechnung (Streamlit)
+
+Kostenteilung für gemeinsame Reisen – als Web-App statt Tkinter-Programm.
+
+## Lokal starten
+
+```bash
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+Die App öffnet sich im Browser unter `http://localhost:8501`.
+
+## Online stellen (z. B. für andere ohne Python)
+
+Am einfachsten über **[Streamlit Community Cloud](https://share.streamlit.io)**:
+1. Diesen Ordner in ein GitHub-Repository legen (privat oder öffentlich).
+2. Auf share.streamlit.io „New app“ → Repository auswählen → `app.py` als Einstiegsdatei.
+3. Fertig – jede:r mit dem Link kann die App im Browser nutzen, ganz ohne Python.
+
+Alternativ funktioniert jeder Host, der `streamlit run app.py` ausführen kann
+(z. B. Hugging Face Spaces, ein eigener Server via Docker).
+
+## Daten laden & sichern
+
+Es wird **nichts serverseitig gespeichert**. Der aktuelle Stand lebt nur in
+der Browser-Session:
+- **Laden:** JSON-Datei in der Sidebar hochladen (versteht sowohl neue
+  Stände dieser App als auch alte Speicherstände aus der Tkinter-Version –
+  die werden beim Laden automatisch migriert).
+- **Sichern/Mitnehmen:** „Als JSON herunterladen“ in der Sidebar lädt den
+  aktuellen Stand als Datei in den Browser-Download-Ordner.
+
+Wer die Reise fortsetzen will, lädt einfach die zuletzt heruntergeladene
+JSON-Datei beim nächsten Besuch wieder hoch.
+
+## Was gegenüber der Tkinter-Version korrigiert wurde
+
+- **Faktor-Bilanzfehler:** Der Essen-/Gruppen-Faktor floss vorher nur in
+  den Anteil der Teilnehmenden ein, nicht in die Gutschrift der Käufer-
+  Familie – bei Faktor ≠ 1.0 ging die Abrechnung nicht mehr auf. Jetzt wird
+  der Faktor auf beide Seiten angewendet, Summe(eingekauft) und
+  Summe(gegessen) stimmen immer überein.
+- **Familien-Umbenennung:** Käufer:innen wurden über den Namen referenziert;
+  Gruppen-Einkäufe (z. B. gemeinsames Frühstück) wurden beim Umbenennen
+  einer Familie nicht mitaktualisiert und verschwanden aus der Abrechnung.
+  Jetzt referenzieren Einkäufe eine stabile ID.
+- **Löschen verschiebt keine Zuordnungen mehr:** Anwesenheit wurde über
+  Listenindizes (Tag/Essen/Familie/Person) gespeichert – Löschen eines
+  Eintrags in der Mitte einer Liste ließ alle folgenden Einträge falsch
+  zugeordnet werden. Jetzt haben alle Entitäten stabile IDs.
+- **Warnungen statt stiller Fehler:** Einkäufe ohne gültige Käufer-Familie
+  oder ohne markierte Teilnehmer:innen erzeugen jetzt eine sichtbare
+  Warnung im Abrechnungs-Tab statt eines unbemerkt falschen Saldos.
