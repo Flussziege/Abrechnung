@@ -139,43 +139,50 @@ with tab_att:
     if not state["families"] or not state["days"]:
         st.info("Lege zuerst mindestens eine Familie (Tab „Familien & Personen“) und einen Tag (Tab „Tage & Essen“) an.")
     else:
-        col_defs = []
-        for day in state["days"]:
-            for meal in day["meals"]:
-                icon = "🔗 " if meal.get("group_id") else ""
-                col_key = f"{day['id']}|{meal['id']}"
-                col_defs.append((col_key, day["id"], meal["id"], f"{icon}{meal['name']}", f'{day["name"]} – {meal["name"]}'))
-
-        rows, row_keys = [], []
-        for fam in state["families"]:
-            for person in fam["persons"]:
-                row = {"Familie": fam["name"], "Person": person["name"]}
-                for col_key, day_id, meal_id, _, _ in col_defs:
-                    key = att_key(day_id, meal_id, fam["id"], person["id"])
-                    row[col_key] = bool(state["attendance"].get(key, False))
-                rows.append(row)
-                row_keys.append((fam["id"], person["id"]))
-
-        df = pd.DataFrame(rows)
-        column_config = {
-            "Familie": st.column_config.TextColumn("Familie", disabled=True),
-            "Person": st.column_config.TextColumn("Person", disabled=True),
-        }
-        for col_key, _, _, label, help_text in col_defs:
-            column_config[col_key] = st.column_config.CheckboxColumn(label, help=help_text)
-
         st.caption("🔗 = Essen ist Teil einer zusammengefassten Gruppe (z. B. Frühstück über alle Tage).")
-        edited = st.data_editor(
-            df,
-            column_config=column_config,
-            hide_index=True,
-            use_container_width=True,
-            key="attendance_editor",
-        )
+        day_subtabs = st.tabs([f"📅 {day['name']}" for day in state["days"]])
 
-        for (fam_id, person_id), (_, row) in zip(row_keys, edited.iterrows()):
-            for col_key, day_id, meal_id, _, _ in col_defs:
-                state["attendance"][att_key(day_id, meal_id, fam_id, person_id)] = bool(row[col_key])
+        for day, day_tab in zip(state["days"], day_subtabs):
+            with day_tab:
+                col_defs = []
+                for meal in day["meals"]:
+                    icon = "🔗 " if meal.get("group_id") else ""
+                    col_key = f"{day['id']}|{meal['id']}"
+                    col_defs.append((col_key, meal["id"], f"{icon}{meal['name']}"))
+
+                if not col_defs:
+                    st.info("Für diesen Tag sind noch keine Essen angelegt (Tab „Tage & Essen“).")
+                    continue
+
+                rows, row_keys = [], []
+                for fam in state["families"]:
+                    for person in fam["persons"]:
+                        row = {"Familie": fam["name"], "Person": person["name"]}
+                        for col_key, meal_id, _ in col_defs:
+                            key = att_key(day["id"], meal_id, fam["id"], person["id"])
+                            row[col_key] = bool(state["attendance"].get(key, False))
+                        rows.append(row)
+                        row_keys.append((fam["id"], person["id"]))
+
+                df = pd.DataFrame(rows)
+                column_config = {
+                    "Familie": st.column_config.TextColumn("Familie", disabled=True),
+                    "Person": st.column_config.TextColumn("Person", disabled=True),
+                }
+                for col_key, _, label in col_defs:
+                    column_config[col_key] = st.column_config.CheckboxColumn(label)
+
+                edited = st.data_editor(
+                    df,
+                    column_config=column_config,
+                    hide_index=True,
+                    use_container_width=True,
+                    key=f"attendance_editor_{day['id']}",
+                )
+
+                for (fam_id, person_id), (_, row) in zip(row_keys, edited.iterrows()):
+                    for col_key, meal_id, _ in col_defs:
+                        state["attendance"][att_key(day["id"], meal_id, fam_id, person_id)] = bool(row[col_key])
 
 
 # ── Tab: Familien & Personen ──────────────────────────────────────────────
